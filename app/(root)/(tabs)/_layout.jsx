@@ -1,41 +1,65 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useUserStore } from "@/store/userStore";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Slot, usePathname, useRouter } from "expo-router";
+import {
+  Icon,
+  Label,
+  NativeTabs,
+  VectorIcon,
+} from "expo-router/unstable-native-tabs";
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const tabs = [
-  { key: "index", label: "Home", icon: "home", route: "/(root)/(tabs)" },
-  {
-    key: "save",
-    label: "Save",
-    icon: "bookmark",
-    route: "/(root)/(tabs)/save",
-  },
-  {
-    key: "search",
-    label: "Search",
-    icon: "magnify",
-    route: "/(root)/(tabs)/search",
-  },
-  {
-    key: "profile",
-    label: "Profile",
-    icon: "account",
-    route: "/(root)/(tabs)/profile",
-  },
-];
-
-export default function TabLayout() {
-  const router = useRouter();
+function AndroidTabs() {
+  const isAdmin = useUserStore((state) => state.isAdmin);
   const pathname = usePathname();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const tabs = [
+    { key: "index", label: "Home", icon: "home", route: "/(root)/(tabs)" },
+    {
+      key: "search",
+      label: "Search",
+      icon: "search",
+      route: "/(root)/(tabs)/search",
+    },
+    ...(isAdmin
+      ? [
+          {
+            key: "create",
+            label: "Add Property",
+            icon: "add-circle",
+            route: "/(root)/(tabs)/create",
+          },
+        ]
+      : []),
+    {
+      key: "save",
+      label: "Saved",
+      icon: "heart",
+      route: "/(root)/(tabs)/save",
+    },
+    {
+      key: "profile",
+      label: "Profile",
+      icon: "person",
+      route: "/(root)/(tabs)/profile",
+    },
+  ];
 
   return (
-    <View className="flex-1 bg-[#f3f3f3]">
+    <View className="flex-1 bg-white">
       <View className="flex-1">
         <Slot />
       </View>
-
-      <View className="absolute inset-x-0 bottom-0 w-full flex-row border-t border-slate-200 bg-white px-2 pb-5 pt-2">
+      <View
+        className="flex-row border-t border-slate-200 bg-white px-1 pt-2"
+        style={{
+          marginBottom: 16,
+          paddingBottom: Math.max(insets.bottom, 8),
+        }}
+      >
         {tabs.map((tab) => {
           const isSelected =
             tab.key === "index"
@@ -45,20 +69,21 @@ export default function TabLayout() {
           return (
             <Pressable
               key={tab.key}
-              onPress={() => router.push(tab.route)}
-              className="flex-1 items-center justify-center py-1"
+              accessibilityRole="tab"
+              accessibilityState={{ selected: isSelected }}
+              onPress={() => router.navigate(tab.route)}
+              className="min-w-0 flex-1 items-center justify-center gap-1 py-1"
             >
-              <MaterialCommunityIcons
-                name={tab.icon}
-                size={24}
-                color={isSelected ? "#2f9cff" : "#7d8797"}
+              <Ionicons
+                name={tab.key === "index" ? "home" : tab.icon}
+                size={tab.key === "create" ? 25 : 23}
+                color={
+                  isSelected || tab.key === "create" ? "#2f9cff" : "#687386"
+                }
               />
-
               <Text
-                className={[
-                  "mt-1 text-[11px] font-medium",
-                  isSelected ? "text-[#2f9cff]" : "text-[#7d8797]",
-                ].join(" ")}
+                numberOfLines={1}
+                className={`text-[10px] font-medium ${isSelected ? "text-[#2f9cff]" : "text-[#687386]"}`}
               >
                 {tab.label}
               </Text>
@@ -68,4 +93,42 @@ export default function TabLayout() {
       </View>
     </View>
   );
+}
+
+function IOSTabs() {
+  const isAdmin = useUserStore((state) => state.isAdmin);
+
+  return (
+    <NativeTabs
+      backgroundColor="#ffffff"
+      blurEffect="systemMaterial"
+      disableTransparentOnScrollEdge
+      tintColor="#2f9cff"
+    >
+      <NativeTabs.Trigger name="index">
+        <Icon src={<VectorIcon family={Ionicons} name="home" />} />
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search">
+        <Icon src={<VectorIcon family={Ionicons} name="search" />} />
+        <Label>Search</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="create" hidden={!isAdmin}>
+        <Icon src={<VectorIcon family={Ionicons} name="add-circle" />} />
+        <Label>Add Property</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="save">
+        <Icon src={<VectorIcon family={Ionicons} name="heart" />} />
+        <Label>Saved</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <Icon src={<VectorIcon family={Ionicons} name="person" />} />
+        <Label>Profile</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+
+export default function TabLayout() {
+  return Platform.OS === "ios" ? <IOSTabs /> : <AndroidTabs />;
 }
