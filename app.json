@@ -20,16 +20,23 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.StanzyLive"
+      "package": "com.aryan.stanzylive"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/icon.png"
+      "favicon": "./assets/images/stanzylive.png"
     },
     "plugins": ["expo-router", "@clerk/expo", "expo-secure-store"],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e5b49933-bd6c-40bb-83d6-06d7d2baacc8"
+      }
+    },
+    "owner": "aryan2604s-team"
   }
 }
