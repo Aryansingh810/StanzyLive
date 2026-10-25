@@ -26,7 +26,11 @@
       "output": "static",
       "favicon": "./assets/images/stanzylive.png"
     },
-    "plugins": ["expo-router", "@clerk/expo", "expo-secure-store"],
+    "plugins": [
+      "expo-router",
+      "@clerk/expo",
+      "expo-secure-store"
+    ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

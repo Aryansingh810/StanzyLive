@@ -1,20 +1,19 @@
 import { useSupabase } from "@/hooks/useSupabase";
 import { useUserStore } from "@/store/userStore";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  ActivityIndicator,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
+    ActivityIndicator,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -100,30 +99,6 @@ export default function CreatePropertyScreen() {
     }
   };
 
-  const pickImageFromFiles = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "image/*",
-        multiple: true,
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled) {
-        appendImages(
-          result.assets.map((asset) => ({
-            uri: asset.uri,
-            name: asset.name,
-            category: imageCategory,
-            mimeType: asset.mimeType,
-          })),
-        );
-      }
-    } catch {
-      setIsError(true);
-      setMessage("Could not open the file picker.");
-    }
-  };
-
   const pickMainImageFromGallery = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -143,29 +118,6 @@ export default function CreatePropertyScreen() {
     } catch {
       setIsError(true);
       setMessage("Could not open the image gallery.");
-    }
-  };
-
-  const pickMainImageFromFiles = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "image/*",
-        multiple: false,
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        const asset = result.assets[0];
-        setMainImage({
-          uri: asset.uri,
-          name: asset.name,
-          category: "Exterior",
-          mimeType: asset.mimeType,
-        });
-      }
-    } catch {
-      setIsError(true);
-      setMessage("Could not open the file picker.");
     }
   };
 
@@ -506,18 +458,6 @@ export default function CreatePropertyScreen() {
                       {mainImage ? "Change photo" : "Choose photo"}
                     </Text>
                   </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel="Browse files for exterior photo"
-                    onPress={pickMainImageFromFiles}
-                    className="h-11 w-12 items-center justify-center rounded-lg border border-slate-200 bg-white"
-                  >
-                    <MaterialCommunityIcons
-                      name="folder-open-outline"
-                      size={19}
-                      color="#1687d9"
-                    />
-                  </Pressable>
                 </View>
               </View>
             </View>
@@ -549,20 +489,6 @@ export default function CreatePropertyScreen() {
                   />
                   <Text className="text-sm font-semibold text-slate-700">
                     Gallery
-                  </Text>
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={pickImageFromFiles}
-                  className="min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3"
-                >
-                  <MaterialCommunityIcons
-                    name="folder-open-outline"
-                    size={19}
-                    color="#1687d9"
-                  />
-                  <Text className="text-sm font-semibold text-slate-700">
-                    Browse files
                   </Text>
                 </Pressable>
               </View>
